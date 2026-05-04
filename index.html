@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EkasiHub — Africa's Entertainment Heartbeat</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   DESIGN TOKENS — Warm Dark Eye-Friendly
+═══════════════════════════════════════════ */
+:root {
+  /* Warm dark backgrounds — no harsh pure black */
+  --bg:        #0f0e0c;
+  --bg-deep:   #0b0a08;
+  --card:      #181612;
+  --card-hover:#1e1c16;
+  --border:    #28251d;
+  --border-hi: #3a3529;
+
+  /* Warm text — not stark white */
+  --text-hi:   #ede8dc;
+  --text:      #c4bfb0;
+  --text-lo:   #6b6457;
+
+  /* Accent palette */
+  --gold:      #f0a500;
+  --gold-soft: #c47d0e;
+  --gold-glow: rgba(240,165,0,0.18);
+  --green:     #3ecf8e;
+  --green-dim: rgba(62,207,142,0.12);
+  --red:       #e85d5d;
+  --amber:     #f59e0b;
+
+  /* Radii & transitions */
+  --r-sm: 6px;
+  --r:    10px;
+  --r-lg: 16px;
+  --ease: cubic-bezier(.4,0,.2,1);
+}
+
+/* ═══════════════════════════════════════════ RESET */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:15px;
+  line-height:1.65;
+  overflow-x:hidden;
+}
+button{cursor:pointer;font-family:inherit}
+a{text-decoration:none;color:inherit}
+input,textarea{font-family:inherit}
+
+/* Warm noise grain overlay */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9000;
+}
+
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:var(--bg-deep)}
+::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px}
+
+/* ═══════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  height:58px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;
+  background:rgba(15,14,12,0.88);
+  backdrop-filter:blur(24px) saturate(1.4);
+  border-bottom:1px solid var(--border);
+}
+.logo{
+  font-family:'Syne',sans-serif;
+  font-weight:800;font-size:21px;letter-spacing:-0.5px;
+  display:flex;align-items:center;gap:8px;color:var(--text-hi);
+}
+.logo-accent{color:var(--gold)}
+.logo-pip{
+  width:7px;height:7px;
+  background:var(--green);border-radius:50%;
+  animation:pip 2.2s ease-in-out infinite;
+}
+@keyframes pip{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.65)}}
+
+.nav-links{display:flex;gap:24px;list-style:none}
+.nav-links a{
+  font-size:13px;font-weight:500;letter-spacing:.4px;
+  color:var(--text-lo);text-transform:uppercase;
+  transition:color .2s var(--ease);
+}
+.nav-links a:hover{color:var(--text)}
+.nav-links a.active{color:var(--gold)}
+
+.nav-right{display:flex;align-items:center;gap:12px}
+
+.search-wrap{
+  display:flex;align-items:center;gap:0;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--r-sm);
+  padding:0 12px;
+  transition:border-color .2s;
+}
+.search-wrap:focus-within{border-color:var(--gold-soft)}
+.search-wrap input{
+  background:transparent;border:none;outline:none;
+  color:var(--text-hi);font-size:13px;padding:8px 8px;width:190px;
+}
+.search-wrap input::placeholder{color:var(--text-lo)}
+.search-ico{color:var(--text-lo);font-size:13px}
+
+.btn-ghost{
+  padding:7px 16px;background:transparent;
+  border:1px solid var(--border);border-radius:var(--r-sm);
+  color:var(--text);font-size:13px;font-weight:500;
+  transition:all .2s var(--ease);
+}
+.btn-ghost:hover{border-color:var(--gold-soft);color:var(--gold)}
+
+.btn-gold{
+  padding:7px 18px;background:var(--gold);
+  border:none;border-radius:var(--r-sm);
+  color:#000;font-size:13px;font-weight:700;
+  transition:all .2s var(--ease);
+}
+.btn-gold:hover{background:#f7b540;transform:translateY(-1px)}
+
+/* Auth state avatar */
+.nav-avatar{
+  width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold),var(--gold-soft));
+  color:#000;font-size:13px;font-weight:800;
+  display:none;align-items:center;justify-content:center;
+  border:2px solid var(--border);cursor:pointer;
+}
+.nav-avatar.show{display:flex}
+
+/* ═══════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════ */
+.hero{
+  margin-top:58px;
+  min-height:520px;
+  display:grid;grid-template-columns:1fr 380px;
+  position:relative;overflow:hidden;
+}
+.hero-left{
+  padding:56px 48px 48px;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  background:linear-gradient(135deg,#141210 0%,#0b0a08 100%);
+  position:relative;
+}
+.hero-left::after{
+  content:'';position:absolute;top:0;right:0;
+  width:1px;height:100%;background:var(--border);
+}
+/* warm ambient glow */
+.hero-glow{
+  position:absolute;top:-80px;left:-80px;
+  width:400px;height:400px;border-radius:50%;
+  background:radial-gradient(circle,rgba(240,165,0,.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+.hero-kicker{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(240,165,0,.09);
+  border:1px solid rgba(240,165,0,.25);
+  color:var(--gold);padding:5px 14px;border-radius:20px;
+  font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  width:fit-content;margin-bottom:22px;
+  animation:fadeUp .5s ease both;
+}
+.hero-kicker::before{
+  content:'';width:6px;height:6px;
+  background:var(--gold);border-radius:50%;
+  animation:pip 1.5s infinite;
+}
+
+.hero-h1{
+  font-family:'Syne',sans-serif;
+  font-weight:800;font-size:clamp(34px,4.5vw,60px);
+  line-height:1.02;letter-spacing:-2px;
+  color:var(--text-hi);margin-bottom:18px;
+  animation:fadeUp .55s .08s ease both;
+}
+.hero-h1 em{
+  font-style:normal;color:var(--gold);
+  position:relative;
+}
+.hero-h1 em::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;
+  height:2px;background:var(--gold);opacity:.3;border-radius:1px;
+}
+
+.hero-sub{
+  color:var(--text-lo);font-size:14px;max-width:400px;
+  margin-bottom:32px;line-height:1.7;
+  animation:fadeUp .55s .15s ease both;
+}
+
+.hero-ctas{
+  display:flex;gap:10px;
+  animation:fadeUp .55s .22s ease both;
+}
+.btn-hero{
+  padding:12px 26px;background:var(--gold);
+  border:none;border-radius:var(--r);
+  color:#000;font-size:14px;font-weight:700;
+  display:flex;align-items:center;gap:7px;
+  transition:all .25s var(--ease);
+}
+.btn-hero:hover{background:#f7b540;transform:translateY(-2px);box-shadow:0 10px 28px rgba(240,165,0,.28)}
+.btn-hero-ol{
+  padding:12px 26px;background:transparent;
+  border:1px solid var(--border);border-radius:var(--r);
+  color:var(--text);font-size:14px;font-weight:500;
+  transition:all .25s var(--ease);
+}
+.btn-hero-ol:hover{border-color:var(--text-lo)}
+
+.hero-stats{
+  display:flex;gap:32px;margin-top:44px;
+  padding-top:24px;border-top:1px solid var(--border);
+  animation:fadeUp .55s .3s ease both;
+}
+.stat-n{
+  font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--text-hi);
+}
+.stat-n span{color:var(--gold)}
+.stat-l{font-size:11px;color:var(--text-lo);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+
+/* Hero featured panel */
+.hero-right{
+  background:var(--bg-deep);
+  display:flex;flex-direction:column;
+  border-left:1px solid var(--border);
+  position:relative;overflow:hidden;
+}
+.feat-panel{
+  flex:1;position:relative;
+  background:linear-gradient(135deg,#1a1208,#0b0c0a,#0a0d10);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.feat-panel::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 40% 45%,rgba(240,165,0,.12),transparent 60%),
+             radial-gradient(circle at 70% 65%,rgba(62,207,142,.07),transparent 45%);
+}
+.feat-play{
+  width:68px;height:68px;border-radius:50%;
+  background:rgba(240,165,0,.92);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;z-index:2;cursor:pointer;
+  transition:all .3s var(--ease);
+  box-shadow:0 0 0 0 rgba(240,165,0,.4);
+  animation:pulse-ring 2.5s ease infinite;
+}
+.feat-play:hover{transform:scale(1.12);background:var(--gold)}
+@keyframes pulse-ring{
+  0%{box-shadow:0 0 0 0 rgba(240,165,0,.35)}
+  70%{box-shadow:0 0 0 20px rgba(240,165,0,0)}
+  100%{box-shadow:0 0 0 0 rgba(240,165,0,0)}
+}
+.feat-info{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:20px 20px 20px;
+  background:linear-gradient(transparent,rgba(11,10,8,.95));
+  z-index:2;
+}
+.feat-tag{
+  display:inline-block;background:var(--gold);color:#000;
+  font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  padding:3px 9px;border-radius:3px;margin-bottom:8px;
+}
+.feat-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text-hi);margin-bottom:6px;line-height:1.25}
+.feat-meta{font-size:11px;color:var(--text-lo);display:flex;gap:10px}
+
+/* Sidebar quicklinks */
+.hero-side-links{
+  border-top:1px solid var(--border);
+  display:flex;flex-direction:column;
+}
+.hero-side-item{
+  padding:13px 18px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;cursor:pointer;
+  transition:background .2s;
+}
+.hero-side-item:hover{background:var(--card)}
+.hero-side-item:last-child{border-bottom:none}
+.side-thumb{
+  width:52px;height:38px;border-radius:6px;
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+}
+.side-ttl{font-size:12px;font-weight:600;color:var(--text-hi);margin-bottom:2px}
+.side-meta{font-size:11px;color:var(--text-lo)}
+
+/* ═══════════════════════════════════════════
+   AD SLOT COMPONENT
+═══════════════════════════════════════════ */
+.ad-banner{
+  margin:0 40px;padding:14px 24px;
+  background:rgba(240,165,0,.04);
+  border:1px dashed rgba(240,165,0,.2);
+  border-radius:var(--r);
+  display:flex;align-items:center;justify-content:center;
+  gap:12px;color:var(--text-lo);font-size:12px;
+  min-height:64px;position:relative;
+}
+.ad-label{
+  position:absolute;top:6px;right:10px;
+  font-size:9px;letter-spacing:1px;text-transform:uppercase;
+  color:var(--text-lo);font-family:'DM Mono',monospace;
+}
+/* In production, replace .ad-banner content with your AdSense <ins> tag */
+
+/* ═══════════════════════════════════════════
+   CATEGORY BAR
+═══════════════════════════════════════════ */
+.cat-bar{
+  padding:16px 40px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+  overflow-x:auto;background:var(--bg-deep);
+}
+.cat-bar::-webkit-scrollbar{display:none}
+.cat-pill{
+  padding:7px 18px;border-radius:30px;
+  border:1px solid var(--border);background:transparent;
+  color:var(--text-lo);font-size:13px;font-weight:500;
+  white-space:nowrap;display:flex;align-items:center;gap:6px;
+  transition:all .2s var(--ease);
+}
+.cat-pill:hover{border-color:var(--gold-soft);color:var(--text)}
+.cat-pill.active{background:var(--gold);color:#000;border-color:var(--gold);font-weight:700}
+
+/* ═══════════════════════════════════════════
+   SECTION COMMON
+═══════════════════════════════════════════ */
+section{padding:56px 40px}
+.s-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.s-title{
+  font-family:'Syne',sans-serif;font-size:20px;font-weight:800;
+  letter-spacing:-.5px;color:var(--text-hi);
+  display:flex;align-items:center;gap:10px;
+}
+.s-title::before{
+  content:'';width:3px;height:20px;
+  background:var(--gold);border-radius:2px;flex-shrink:0;
+}
+.see-all{
+  font-size:12px;color:var(--gold);font-weight:600;
+  letter-spacing:.3px;opacity:.8;display:flex;align-items:center;gap:4px;
+  transition:opacity .2s;
+}
+.see-all:hover{opacity:1}
+
+/* ═══════════════════════════════════════════
+   VIDEO GRID
+═══════════════════════════════════════════ */
+.vid-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+}
+
+.vid-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;cursor:pointer;
+  transition:all .25s var(--ease);
+  animation:fadeUp .45s ease both;
+}
+.vid-card:nth-child(1){animation-delay:.00s}
+.vid-card:nth-child(2){animation-delay:.05s}
+.vid-card:nth-child(3){animation-delay:.10s}
+.vid-card:nth-child(4){animation-delay:.15s}
+.vid-card:nth-child(5){animation-delay:.20s}
+.vid-card:nth-child(6){animation-delay:.25s}
+.vid-card:nth-child(7){animation-delay:.30s}
+.vid-card:nth-child(8){animation-delay:.35s}
+
+.vid-card:hover{
+  transform:translateY(-4px);
+  border-color:var(--border-hi);
+  box-shadow:0 14px 36px rgba(0,0,0,.5);
+}
+
+/* Premium card lock */
+.vid-card.premium{position:relative}
+.premium-lock{
+  position:absolute;inset:0;z-index:10;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;
+  background:rgba(11,10,8,.88);
+  backdrop-filter:blur(6px);
+  opacity:0;transition:opacity .25s var(--ease);
+}
+.vid-card.premium:hover .premium-lock{opacity:1}
+.lock-icon{font-size:28px}
+.lock-text{font-size:12px;color:var(--text);text-align:center;line-height:1.4}
+.btn-unlock{
+  padding:8px 20px;background:var(--gold);color:#000;
+  border:none;border-radius:var(--r-sm);
+  font-size:12px;font-weight:700;margin-top:4px;
+  transition:all .2s;
+}
+.btn-unlock:hover{background:#f7b540}
+
+/* Premium blur thumb */
+.vid-card.premium .vid-thumb-bg{
+  filter:blur(6px);transform:scale(1.05);
+}
+
+.vid-thumb{aspect-ratio:16/9;position:relative;overflow:hidden}
+.vid-thumb-bg{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;transition:transform .3s var(--ease);
+}
+.vid-card:hover .vid-thumb-bg:not(.blurred){transform:scale(1.04)}
+
+.vid-dur{
+  position:absolute;bottom:7px;right:7px;
+  background:rgba(11,10,8,.85);
+  color:var(--text-hi);font-family:'DM Mono',monospace;
+  font-size:11px;padding:2px 7px;border-radius:3px;z-index:2;
+}
+.vid-live-badge{
+  position:absolute;top:7px;left:7px;
+  background:var(--red);color:#fff;
+  font-size:10px;font-weight:700;letter-spacing:.8px;
+  padding:3px 8px;border-radius:3px;z-index:2;
+  display:flex;align-items:center;gap:5px;
+}
+.vid-live-badge::before{
+  content:'';width:5px;height:5px;
+  background:#fff;border-radius:50%;animation:pip 1s infinite;
+}
+.vid-premium-badge{
+  position:absolute;top:7px;right:7px;
+  background:var(--gold);color:#000;
+  font-size:9px;font-weight:800;letter-spacing:1px;
+  padding:3px 8px;border-radius:3px;z-index:2;text-transform:uppercase;
+}
+
+.vid-play-layer{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity .2s;z-index:3;
+}
+.vid-card:hover .vid-play-layer{opacity:1}
+.vid-play-circle{
+  width:42px;height:42px;border-radius:50%;
+  background:rgba(240,165,0,.92);
+  display:flex;align-items:center;justify-content:center;
+}
+
+.vid-body{padding:14px}
+.vid-creator{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.avi{
+  width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;flex-shrink:0;border:2px solid var(--border);
+}
+.creator-n{font-size:12px;font-weight:600;color:var(--text)}
+.verified{color:var(--gold);font-size:10px;margin-left:3px}
+.vid-title{
+  font-size:13px;font-weight:600;line-height:1.4;
+  color:var(--text-hi);margin-bottom:8px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.vid-meta{display:flex;gap:9px;font-size:11px;color:var(--text-lo)}
+
+/* Thumb color variants */
+.t1{background:linear-gradient(135deg,#1d120a,#2a1a00)}
+.t2{background:linear-gradient(135deg,#08180f,#0a2214)}
+.t3{background:linear-gradient(135deg,#1d1000,#261500)}
+.t4{background:linear-gradient(135deg,#0c0819,#140a24)}
+.t5{background:linear-gradient(135deg,#0a1818,#0e2424)}
+.t6{background:linear-gradient(135deg,#1a1800,#242100)}
+.t7{background:linear-gradient(135deg,#1a000e,#26001a)}
+.t8{background:linear-gradient(135deg,#08161a,#0c1e22)}
+
+/* Avi colors */
+.a1{background:linear-gradient(135deg,#f0a500,#c47d0e);color:#000}
+.a2{background:linear-gradient(135deg,#3ecf8e,#0ea572);color:#000}
+.a3{background:linear-gradient(135deg,#ff6b35,#cc4400);color:#fff}
+.a4{background:linear-gradient(135deg,#7c4dff,#4527a0);color:#fff}
+.a5{background:linear-gradient(135deg,#29b6f6,#0277bd);color:#fff}
+.a6{background:linear-gradient(135deg,#ef5350,#b71c1c);color:#fff}
+
+/* ═══════════════════════════════════════════
+   LIVE SECTION
+═══════════════════════════════════════════ */
+.live-section{background:var(--bg-deep);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.live-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.live-card{
+  border-radius:var(--r);overflow:hidden;
+  cursor:pointer;position:relative;aspect-ratio:16/9;
+  transition:transform .25s var(--ease);
+}
+.live-card:hover{transform:scale(1.025)}
+.live-thumb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:48px}
+.live-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(transparent 35%,rgba(11,10,8,.96));
+  display:flex;flex-direction:column;justify-content:flex-end;padding:18px;
+}
+.live-badge-abs{
+  position:absolute;top:10px;left:10px;
+  background:var(--red);color:#fff;
+  font-size:10px;font-weight:700;letter-spacing:.8px;
+  padding:4px 10px;border-radius:4px;
+  display:flex;align-items:center;gap:5px;
+}
+.live-badge-abs::before{content:'';width:5px;height:5px;background:#fff;border-radius:50%;animation:pip 1s infinite}
+.viewers-abs{
+  position:absolute;top:10px;right:10px;
+  background:rgba(11,10,8,.75);color:var(--text);
+  font-size:11px;padding:4px 10px;border-radius:4px;
+}
+.live-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--text-hi);margin-bottom:4px}
+.live-sub{font-size:12px;color:var(--text-lo)}
+
+/* ═══════════════════════════════════════════
+   CREATORS GRID
+═══════════════════════════════════════════ */
+.creators-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.creator-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);padding:20px 14px;
+  text-align:center;cursor:pointer;
+  transition:all .25s var(--ease);
+}
+.creator-card:hover{border-color:var(--border-hi);transform:translateY(-3px)}
+.cc-avi{
+  width:60px;height:60px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin:0 auto 12px;
+  border:2px solid var(--border);position:relative;
+  transition:border-color .2s;
+}
+.creator-card:hover .cc-avi{border-color:var(--gold)}
+.online-pip{
+  position:absolute;bottom:2px;right:2px;
+  width:11px;height:11px;background:var(--green);
+  border-radius:50%;border:2px solid var(--card);
+}
+.cc-name{font-size:13px;font-weight:700;color:var(--text-hi);margin-bottom:2px}
+.cc-handle{font-size:11px;color:var(--text-lo);margin-bottom:8px}
+.cc-subs{font-size:11px;color:var(--gold);font-weight:600}
+.follow-btn{
+  margin-top:10px;width:100%;padding:7px;
+  border:1px solid var(--border);background:transparent;
+  color:var(--text);border-radius:var(--r-sm);
+  font-size:12px;transition:all .2s var(--ease);
+}
+.follow-btn:hover,.follow-btn.following{
+  background:var(--green-dim);color:var(--green);border-color:rgba(62,207,142,.35);font-weight:600;
+}
+
+/* ═══════════════════════════════════════════
+   TRENDING TAGS
+═══════════════════════════════════════════ */
+.trending-section{background:var(--bg-deep);border-top:1px solid var(--border)}
+.tag-cloud{display:flex;flex-wrap:wrap;gap:9px}
+.trend-tag{
+  padding:9px 18px;background:var(--card);
+  border:1px solid var(--border);border-radius:30px;
+  font-size:13px;color:var(--text);cursor:pointer;
+  display:flex;align-items:center;gap:8px;
+  transition:all .2s var(--ease);
+}
+.trend-tag:hover{border-color:var(--gold);color:var(--gold)}
+.t-count{font-size:10px;color:var(--text-lo);font-family:'DM Mono',monospace}
+
+/* ═══════════════════════════════════════════
+   MONETIZATION BANNER
+═══════════════════════════════════════════ */
+.promo-wrap{padding:0 40px 48px}
+.promo-card{
+  border-radius:var(--r-lg);padding:48px;
+  background:linear-gradient(135deg,#1a1200,#0e0e0e 50%,#001a0a);
+  border:1px solid rgba(240,165,0,.18);
+  position:relative;overflow:hidden;
+  display:grid;grid-template-columns:1fr auto;align-items:center;gap:40px;
+}
+.promo-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 15% 50%,rgba(240,165,0,.09),transparent 50%),
+             radial-gradient(circle at 85% 50%,rgba(62,207,142,.05),transparent 45%);
+}
+.promo-kicker{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--green-dim);border:1px solid rgba(62,207,142,.25);
+  color:var(--green);padding:4px 14px;border-radius:20px;
+  font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  width:fit-content;margin-bottom:14px;position:relative;z-index:1;
+}
+.promo-title{
+  font-family:'Syne',sans-serif;font-size:28px;font-weight:800;
+  letter-spacing:-1px;color:var(--text-hi);margin-bottom:10px;
+  position:relative;z-index:1;
+}
+.promo-desc{font-size:13px;color:var(--text-lo);position:relative;z-index:1}
+.btn-promo{
+  position:relative;z-index:1;
+  padding:15px 30px;background:var(--gold);color:#000;
+  border:none;border-radius:var(--r);
+  font-size:14px;font-weight:700;white-space:nowrap;
+  transition:all .2s var(--ease);flex-shrink:0;
+}
+.btn-promo:hover{background:#f7b540;transform:translateY(-2px);box-shadow:0 8px 24px rgba(240,165,0,.35)}
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+footer{
+  background:var(--bg-deep);
+  border-top:1px solid var(--border);
+  padding:48px 40px 28px;
+}
+.foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
+.foot-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:19px;color:var(--text-hi);margin-bottom:10px}
+.foot-logo span{color:var(--gold)}
+.foot-desc{font-size:13px;color:var(--text-lo);line-height:1.7;margin-bottom:18px}
+.socials{display:flex;gap:8px}
+.soc{
+  width:34px;height:34px;background:var(--card);
+  border:1px solid var(--border);border-radius:var(--r-sm);
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;cursor:pointer;transition:all .2s var(--ease);
+}
+.soc:hover{border-color:var(--gold);transform:translateY(-2px)}
+.foot-heading{
+  font-family:'Syne',sans-serif;font-weight:700;
+  font-size:12px;letter-spacing:1px;text-transform:uppercase;
+  color:var(--text-hi);margin-bottom:14px;
+}
+.foot-links{list-style:none;display:flex;flex-direction:column;gap:9px}
+.foot-links a{font-size:13px;color:var(--text-lo);transition:color .2s}
+.foot-links a:hover{color:var(--gold)}
+.foot-bottom{
+  border-top:1px solid var(--border);padding-top:22px;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:12px;color:var(--text-lo);
+}
+.foot-bottom-links{display:flex;gap:18px}
+.foot-bottom-links a{color:var(--text-lo);transition:color .2s}
+.foot-bottom-links a:hover{color:var(--text)}
+
+/* ═══════════════════════════════════════════
+   MODALS
+═══════════════════════════════════════════ */
+.overlay{
+  position:fixed;inset:0;z-index:800;
+  background:rgba(11,10,8,.85);backdrop-filter:blur(12px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .25s var(--ease);
+}
+.overlay.open{opacity:1;pointer-events:all}
+
+.modal{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:36px;width:100%;max-width:420px;
+  position:relative;
+  transform:translateY(20px);transition:transform .3s var(--ease);
+}
+.overlay.open .modal{transform:translateY(0)}
+
+.modal-close{
+  position:absolute;top:16px;right:16px;
+  background:var(--bg);border:1px solid var(--border);
+  color:var(--text-lo);width:30px;height:30px;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:14px;cursor:pointer;transition:all .2s;
+}
+.modal-close:hover{border-color:var(--text-lo);color:var(--text)}
+
+.modal-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--text-hi);margin-bottom:4px}
+.modal-logo span{color:var(--gold)}
+.modal-sub{font-size:13px;color:var(--text-lo);margin-bottom:24px}
+
+/* Auth tabs */
+.auth-tabs{display:flex;gap:0;margin-bottom:24px;background:var(--bg);border-radius:var(--r-sm);padding:3px}
+.auth-tab{
+  flex:1;padding:8px;border:none;background:transparent;
+  color:var(--text-lo);font-size:13px;font-weight:600;
+  border-radius:6px;transition:all .2s var(--ease);
+}
+.auth-tab.active{background:var(--card);color:var(--text-hi)}
+
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;letter-spacing:.3px}
+.field input{
+  width:100%;padding:10px 14px;
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--r-sm);color:var(--text-hi);font-size:14px;outline:none;
+  transition:border-color .2s;
+}
+.field input:focus{border-color:var(--gold-soft)}
+
+.btn-auth{
+  width:100%;padding:12px;margin-top:4px;
+  background:var(--gold);color:#000;border:none;
+  border-radius:var(--r);font-size:14px;font-weight:700;
+  transition:all .2s var(--ease);
+}
+.btn-auth:hover{background:#f7b540}
+.auth-footer-note{font-size:12px;color:var(--text-lo);text-align:center;margin-top:14px}
+.auth-footer-note a{color:var(--gold)}
+
+/* Premium upgrade modal */
+.premium-modal{max-width:440px}
+.plan-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}
+.plan{
+  padding:16px;border:1px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all .2s;
+}
+.plan.rec{border-color:var(--gold);background:rgba(240,165,0,.06)}
+.plan-name{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-lo);margin-bottom:4px}
+.plan-price{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text-hi)}
+.plan-price span{font-size:12px;font-weight:400;color:var(--text-lo)}
+.plan-perks{font-size:11px;color:var(--text-lo);margin-top:8px;line-height:1.6}
+.rec-badge{
+  display:inline-block;background:var(--gold);color:#000;
+  font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+  padding:2px 8px;border-radius:2px;margin-bottom:6px;
+}
+.btn-paystack{
+  width:100%;padding:13px;background:var(--gold);color:#000;
+  border:none;border-radius:var(--r);font-size:14px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .2s var(--ease);
+}
+.btn-paystack:hover{background:#f7b540}
+.paystack-note{font-size:11px;color:var(--text-lo);text-align:center;margin-top:10px}
+
+/* Toast */
+.toast{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--card);border:1px solid var(--border);
+  color:var(--text-hi);padding:12px 24px;border-radius:var(--r);
+  font-size:13px;font-weight:500;z-index:900;
+  transition:transform .35s var(--ease),opacity .35s;
+  opacity:0;box-shadow:0 8px 32px rgba(0,0,0,.5);white-space:nowrap;
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* FAB */
+.chat-fab{
+  position:fixed;bottom:28px;right:28px;z-index:400;
+  width:52px;height:52px;background:var(--gold);color:#000;
+  border:none;border-radius:50%;font-size:20px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 20px rgba(240,165,0,.4);
+  transition:all .2s var(--ease);
+}
+.chat-fab:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(240,165,0,.5)}
+.fab-notif{
+  position:absolute;top:-2px;right:-2px;
+  width:17px;height:17px;background:var(--red);
+  border-radius:50%;border:2px solid var(--bg);
+  font-size:9px;font-weight:700;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(18px)}
+  to{opacity:1;transform:translateY(0)}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <div class="logo"><div class="logo-pip"></div>Ekasi<span class="logo-accent">Hub</span></div>
+  <ul class="nav-links">
+    <li><a href="#" class="active">Home</a></li>
+    <li><a href="#">Trending</a></li>
+    <li><a href="#">Live</a></li>
+    <li><a href="#">Creators</a></li>
+    <li><a href="#">Community</a></li>
+    <li><a href="#">Upload</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="search-wrap">
+      <span class="search-ico">🔍</span>
+      <input type="text" placeholder="Search Mzansi content...">
+    </div>
+    <button class="btn-ghost" id="openLogin">Sign In</button>
+    <button class="btn-gold" id="openSignup">Join Free</button>
+    <div class="nav-avatar" id="navAvatar">P</div>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-glow"></div>
+    <div class="hero-kicker">🌍 Africa's #1 Entertainment Hub</div>
+    <h1 class="hero-h1">Where <em>Ekasi</em><br>Culture Lives</h1>
+    <p class="hero-sub">Viral videos, live streams, and raw talent from South Africa, Nigeria, Ghana, and the whole continent. Real people. Real stories. Real Africa.</p>
+    <div class="hero-ctas">
+      <button class="btn-hero" onclick="openModal('authOverlay')">▶ Explore Free</button>
+      <button class="btn-hero-ol">Upload Content</button>
+    </div>
+    <div class="hero-stats">
+      <div><div class="stat-n">2.6<span>M</span></div><div class="stat-l">Monthly Visitors</div></div>
+      <div><div class="stat-n">48<span>K</span></div><div class="stat-l">Creators</div></div>
+      <div><div class="stat-n">12<span>+</span></div><div class="stat-l">Countries</div></div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="feat-panel">
+      <div class="feat-play">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#000"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+      <div class="feat-info">
+        <div class="feat-tag">🔥 Trending Now</div>
+        <div class="feat-title">Amapiano Hits That Broke The Internet</div>
+        <div class="feat-meta"><span>@DJLungisa</span><span>·</span><span>1.2M views</span><span>·</span><span>2d ago</span></div>
+      </div>
+    </div>
+    <div class="hero-side-links">
+      <div class="hero-side-item">
+        <div class="side-thumb t2">😂</div>
+        <div><div class="side-ttl">Soweto Comedy Open Mic Live</div><div class="side-meta">@KhalifaComedy · 8.7K watching</div></div>
+      </div>
+      <div class="hero-side-item">
+        <div class="side-thumb t5">⚽</div>
+        <div><div class="side-ttl">PSL Watch Party — Chiefs vs Pirates</div><div class="side-meta">@SportsBantam · 22K watching</div></div>
+      </div>
+      <div class="hero-side-item">
+        <div class="side-thumb t3">💃</div>
+        <div><div class="side-ttl">Gqom Challenge — Who Wins?</div><div class="side-meta">@NomzaMoves · 672K views</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ AD SLOT — leaderboard ═══ -->
+<div class="ad-banner" style="margin-top:8px">
+  <span class="ad-label">Advertisement</span>
+  <!-- REPLACE WITH: <ins class="adsbygoogle" data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXX" data-ad-format="horizontal"></ins> -->
+  <span style="font-size:18px">📣</span>
+  <span>AdSense leaderboard slot — replace this div with your Google AdSense code</span>
+</div>
+
+<!-- ═══ CATEGORIES ═══ -->
+<div class="cat-bar">
+  <button class="cat-pill active">🔥 All</button>
+  <button class="cat-pill">🎵 Amapiano</button>
+  <button class="cat-pill">😂 Comedy</button>
+  <button class="cat-pill">💃 Dance</button>
+  <button class="cat-pill">⚽ Sports</button>
+  <button class="cat-pill">👗 Fashion</button>
+  <button class="cat-pill">🍲 Food</button>
+  <button class="cat-pill">📰 News</button>
+  <button class="cat-pill">🎮 Gaming</button>
+  <button class="cat-pill">💄 Beauty</button>
+  <button class="cat-pill">🏘️ Township Life</button>
+</div>
+
+<!-- ═══ TRENDING VIDEOS ═══ -->
+<section>
+  <div class="s-head">
+    <div class="s-title">Trending Today</div>
+    <a href="#" class="see-all">See all →</a>
+  </div>
+  <div class="vid-grid">
+
+    <!-- FREE cards -->
+    <div class="vid-card">
+      <div class="vid-thumb"><div class="vid-thumb-bg t1">🎵</div><div class="vid-dur">4:32</div><div class="vid-play-layer"><div class="vid-play-circle"><svg width="13" height="13" viewBox="0 0 24 24" fill="#000"><path d="M8 5v14l11-7z"/></svg></div></div></div>
+      <div class="vid-body"><div class="vid-creator"><div class="avi a1">D</div><div><div class="creator-n">DJLungisa<span class="verified">✓</span></div></div></div><div class="vid-title">Amapiano Mix That Broke TikTok — Summer 2026 Edition</div><div class="vid-meta"><span>👁 1.2M</span><span>·</span><span>2d ago</span></div></div>
+    </div>
+
+    <div class="vid-card">
+      <div class="vid-thumb"><div class="vid-thumb-bg t2">😂</div><div class="vid-dur">2:15</div><div class="vid-play-layer"><div class="vid-play-circle"><svg width="13" height="13" viewBox="0 0 24 24" fill="#000"><path d="M8 5v14l11-7z"/></svg></div></div></div>
+      <div class="vid-body"><div class="vid-creator"><div class="avi a2">K</div><div><div class="creator-n">KhalifaComedy<span class="verified">✓</span></div></div></div><div class="vid-title">When Bra Zakes Goes To Sandton For The First Time 💀</div><div class="vid-meta"><span>👁 890K</span><span>·</span><span>3d ago</span></div></div>
+    </div>
+
+    <div class="vid-card">
+      <div class="vid-thumb"><div class="vid-thumb-bg t3">💃</div><div class="vid-dur">1:08</div><div class="vid-live-badge">LIVE</div><div class="vid-play-layer"><div class="vid-play-circle"><svg width="13" height="13" viewBox="0 0 24 24" fill="#000"><path d="M8 5v14l11-7z"/></svg></div></div></div>
+      <div class="vid-body"><div class="vid-creator"><div class="avi a3">N</div><div><div class="creator-n">NomzaMoves</div></div></div><div class="vid-title">Gqom Challenge — Who Can Outdo Nomza?? 🔥</div><div class="vid-meta"><span>👁 672K</span><span>·</span><span>5d ago</span></div></div>
+    </div>
+
+    <div class="vid-card">
+      <div class="vid-thumb"><div class="vid-thumb-bg t4">⚽</div><div class="vid-dur">6:44</div><div class="vid-play-layer"><div class="vid-play-circle"><svg width="13" height="13" viewBox="0 0 24 24" fill="#000"><path d="M8 5v14l11-7z"/></svg></div></div></div>
+      <div class="vid-body"><div class="vid-creator"><div class="avi a4">S</div><div><div class="creator-n">SportsBantam<span class="verified">✓</span></div></div></div><div class="vid-title">Bafana's Historic World Cup Qualifier — Full Highlights</div><div class="vid-meta"><span>👁 545K</span><span>·</span><span>1w ago</span></div></div>
+    </div>
+
+    <!-- PREMIUM cards — blurred until upgrade -->
+    <div class="vid-card premium" onclick="openModal('premiumOverlay')">
+      <div class="premium-lock">
+        <div class="lock-icon">🔒</div>
+        <div class="lock-text">Premium content<br>Unlock for ₦2,500/mo</div>
+        <button class="btn-unlock">Upgrade Now</button>
+      </div>
+      <div class="vid-thumb"><div class="vid-thumb-bg t5 blurred">🍲</div><div class="vid-premium-badge">PREMIUM</div></div>
+      <div class="vid-body"><div class="vid-creator"><div class="avi a5">M</div><div><div class="creator-n">MamaKhumalo</div></div></div><div class="vid-title">Secret Umngqusho Recipe — Exclusive Full Tutorial</div><div class="vid-meta"><span>👁 433K</span><span>·</span><span>4d ago</span></div></div>
+    </div>
+
+    <div class="vid-card premium" onclick="openModal('premiumOverlay')">
+      <div class="premium-lock">
+        <div class="lock-icon">🔒</div>
+        <div class="lock-text">Premium content<br>Unlock for ₦2,500/mo</div>
+        <button class="btn-unlock">Upgrade Now</button>
+      </div>
+      <div class="vid-thumb"><div class="vid-thumb-bg t6 blurred">👗</div><div class="vid-premium-badge">PREMIUM</div></div>
+      <div class="vid-body"><div class="vid-creator"><div class="avi a6">T</div><div><div class="creator-n">ThandoStyle<span class="verified">✓</span></div></div></div><div class="vid-title">Full Township Drip Lookbook — 30 Outfits Under ₦10K</div><div class="vid-meta"><span>👁 311K</span><span>·</span><span>6d ago</span></div></div>
+    </div>
+
+    <div class="vid-card">
+      <div class="vid-thumb"><div class="vid-thumb-bg t7">😂</div><div class="vid-dur">1:58</div><div class="vid-play-layer"><div class="vid-play-circle"><svg width="13" height="13" viewBox="0 0 24 24" fill="#000"><path d="M8 5v14l11-7z"/></svg></div></div></div>
+      <div class="vid-body"><div class="vid-creator"><div class="avi a1">B</div><div><div class="creator-n">BraMaphepha</div></div></div><div class="vid-title">SA vs Nigeria — The Most Savage Twitter Beef Ever 😭</div><div class="vid-meta"><span>👁 287K</span><span>·</span><span>3d ago</span></div></div>
+    </div>
+
+    <div class="vid-card">
+      <div class="vid-thumb"><div class="vid-thumb-bg t8">🎵</div><div class="vid-dur">5:20</div><div class="vid-play-layer"><div class="vid-play-circle"><svg width="13" height="13" viewBox="0 0 24 24" fill="#000"><path d="M8 5v14l11-7z"/></svg></div></div></div>
+      <div class="vid-body"><div class="vid-creator"><div class="avi a2">L</div><div><div class="creator-n">LadyDuLa<span class="verified">✓</span></div></div></div><div class="vid-title">She Dropped A Fire Single And Nobody's Talking About It??</div><div class="vid-meta"><span>👁 198K</span><span>·</span><span>1d ago</span></div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ AD SLOT — rectangle ═══ -->
+<div class="ad-banner">
+  <span class="ad-label">Advertisement</span>
+  <!-- REPLACE: <ins class="adsbygoogle" data-ad-format="rectangle"></ins> -->
+  <span style="font-size:18px">📣</span>
+  <span>AdSense rectangle slot — swap this with your Google AdSense code</span>
+</div>
+
+<!-- ═══ LIVE NOW ═══ -->
+<section class="live-section">
+  <div class="s-head">
+    <div class="s-title" style="color:var(--text-hi)"><span style="color:var(--red)">🔴 Live Now</span></div>
+    <a href="#" class="see-all">All streams →</a>
+  </div>
+  <div class="live-grid">
+    <div class="live-card">
+      <div class="live-thumb t1">🎵</div>
+      <div class="live-badge-abs">LIVE</div><div class="viewers-abs">👁 14.2K</div>
+      <div class="live-overlay"><div class="live-title">Friday Night Amapiano Session</div><div class="live-sub">@DJLungisa · Music</div></div>
+    </div>
+    <div class="live-card">
+      <div class="live-thumb t2">😂</div>
+      <div class="live-badge-abs">LIVE</div><div class="viewers-abs">👁 8.7K</div>
+      <div class="live-overlay"><div class="live-title">Live Comedy Open Mic — Soweto 🎤</div><div class="live-sub">@KhalifaComedy · Comedy</div></div>
+    </div>
+    <div class="live-card">
+      <div class="live-thumb t5">⚽</div>
+      <div class="live-badge-abs">LIVE</div><div class="viewers-abs">👁 22.1K</div>
+      <div class="live-overlay"><div class="live-title">Watch Party — Kaizer Chiefs vs Pirates</div><div class="live-sub">@SportsBantam · Sports</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CREATORS ═══ -->
+<section>
+  <div class="s-head">
+    <div class="s-title">Top Creators This Month</div>
+    <a href="#" class="see-all">Explore all →</a>
+  </div>
+  <div class="creators-grid">
+    <div class="creator-card"><div class="cc-avi a1">🎵<div class="online-pip"></div></div><div class="cc-name">DJLungisa</div><div class="cc-handle">@djlungisa</div><div class="cc-subs">218K followers</div><button class="follow-btn" onclick="toggleFollow(this)">+ Follow</button></div>
+    <div class="creator-card"><div class="cc-avi a2">😂<div class="online-pip"></div></div><div class="cc-name">KhalifaComedy</div><div class="cc-handle">@khalifacomedy</div><div class="cc-subs">184K followers</div><button class="follow-btn" onclick="toggleFollow(this)">+ Follow</button></div>
+    <div class="creator-card"><div class="cc-avi a3">💃</div><div class="cc-name">NomzaMoves</div><div class="cc-handle">@nomzamoves</div><div class="cc-subs">97K followers</div><button class="follow-btn" onclick="toggleFollow(this)">+ Follow</button></div>
+    <div class="creator-card"><div class="cc-avi a6">👗<div class="online-pip"></div></div><div class="cc-name">ThandoStyle</div><div class="cc-handle">@thandostyle</div><div class="cc-subs">73K followers</div><button class="follow-btn" onclick="toggleFollow(this)">+ Follow</button></div>
+    <div class="creator-card"><div class="cc-avi a5">🍲</div><div class="cc-name">MamaKhumalo</div><div class="cc-handle">@mamakhumalo</div><div class="cc-subs">62K followers</div><button class="follow-btn" onclick="toggleFollow(this)">+ Follow</button></div>
+    <div class="creator-card"><div class="cc-avi a4">⚽<div class="online-pip"></div></div><div class="cc-name">SportsBantam</div><div class="cc-handle">@sportsbantam</div><div class="cc-subs">51K followers</div><button class="follow-btn" onclick="toggleFollow(this)">+ Follow</button></div>
+  </div>
+</section>
+
+<!-- ═══ TRENDING TAGS ═══ -->
+<section class="trending-section">
+  <div class="s-head"><div class="s-title">Trending Topics</div></div>
+  <div class="tag-cloud">
+    <div class="trend-tag">#Amapiano <span class="t-count">45.2K</span></div>
+    <div class="trend-tag">#GqomChallenge <span class="t-count">22.1K</span></div>
+    <div class="trend-tag">#KasiDrip <span class="t-count">18.9K</span></div>
+    <div class="trend-tag">#SowetoComedy <span class="t-count">16.4K</span></div>
+    <div class="trend-tag">#BafanaBafana <span class="t-count">14.7K</span></div>
+    <div class="trend-tag">#MzansiCooking <span class="t-count">12.3K</span></div>
+    <div class="trend-tag">#NigeriaVsSA <span class="t-count">11.1K</span></div>
+    <div class="trend-tag">#DurbanVibes <span class="t-count">9.8K</span></div>
+    <div class="trend-tag">#CapeTownTalent <span class="t-count">9.2K</span></div>
+    <div class="trend-tag">#AfricanFashionWeek <span class="t-count">8.6K</span></div>
+    <div class="trend-tag">#LocalIsLekker <span class="t-count">7.4K</span></div>
+    <div class="trend-tag">#JoziNights <span class="t-count">6.9K</span></div>
+    <div class="trend-tag">#Maskandi <span class="t-count">5.5K</span></div>
+    <div class="trend-tag">#AfroBeats <span class="t-count">4.8K</span></div>
+  </div>
+</section>
+
+<!-- ═══ CREATOR CTA BANNER ═══ -->
+<div class="promo-wrap">
+  <div class="promo-card">
+    <div>
+      <div class="promo-kicker">🌍 For Creators</div>
+      <h2 class="promo-title">Share Your Talent<br>With The Continent</h2>
+      <p class="promo-desc">Upload videos, go live, grow your audience across 12 African countries. Free forever for creators. Keep 80% of all earnings.</p>
+    </div>
+    <button class="btn-promo" onclick="openModal('authOverlay')">Start Creating →</button>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="foot-grid">
+    <div>
+      <div class="foot-logo">Ekasi<span>Hub</span></div>
+      <p class="foot-desc">Africa's home for entertainment, culture, and community. From the township to the world.</p>
+      <div class="socials">
+        <div class="soc">𝕏</div><div class="soc">📘</div><div class="soc">📸</div><div class="soc">▶</div><div class="soc">🎵</div>
+      </div>
+    </div>
+    <div><div class="foot-heading">Platform</div><ul class="foot-links"><li><a href="#">Trending</a></li><li><a href="#">Live Streams</a></li><li><a href="#">Categories</a></li><li><a href="#">Creators</a></li><li><a href="#">Community</a></li></ul></div>
+    <div><div class="foot-heading">Creators</div><ul class="foot-links"><li><a href="#">Upload Video</a></li><li><a href="#">Go Live</a></li><li><a href="#">Dashboard</a></li><li><a href="#">Monetization</a></li><li><a href="#">Creator Program</a></li></ul></div>
+    <div><div class="foot-heading">Company</div><ul class="foot-links"><li><a href="#">About Us</a></li><li><a href="#">Advertise</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Contact</a></li></ul></div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 EkasiHub. Built for Africa, by Africa. 🌍</span>
+    <div class="foot-bottom-links">
+      <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Cookies</a><a href="#">POPIA</a><a href="#">NDPC</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══ CHAT FAB ═══ -->
+<button class="chat-fab">💬<div class="fab-notif">3</div></button>
+
+<!-- ═══════════════════════════════════════════
+   AUTH MODAL
+═══════════════════════════════════════════ -->
+<div class="overlay" id="authOverlay" onclick="handleOverlayClick(event,'authOverlay')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('authOverlay')">✕</button>
+    <div class="modal-logo">Ekasi<span>Hub</span></div>
+    <div class="modal-sub">Join Africa's fastest growing entertainment community</div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Sign In</button>
+      <button class="auth-tab" id="tabSignup" onclick="switchTab('signup')">Create Account</button>
+    </div>
+
+    <!-- Login form -->
+    <div id="formLogin">
+      <div class="field"><label>Email</label><input type="email" id="loginEmail" placeholder="you@email.com"></div>
+      <div class="field"><label>Password</label><input type="password" id="loginPass" placeholder="••••••••"></div>
+      <button class="btn-auth" onclick="doLogin()">Sign In →</button>
+      <div class="auth-footer-note">No account? <a href="#" onclick="switchTab('signup')">Create one free</a></div>
+    </div>
+
+    <!-- Signup form -->
+    <div id="formSignup" style="display:none">
+      <div class="field"><label>Display Name</label><input type="text" id="signupName" placeholder="Your name or handle"></div>
+      <div class="field"><label>Email</label><input type="email" id="signupEmail" placeholder="you@email.com"></div>
+      <div class="field"><label>Password</label><input type="password" id="signupPass" placeholder="Min. 8 characters"></div>
+      <button class="btn-auth" onclick="doSignup()">Create Free Account →</button>
+      <div class="auth-footer-note">By signing up you agree to our <a href="#">Terms</a> & <a href="#">Privacy Policy</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PREMIUM MODAL ═══ -->
+<div class="overlay" id="premiumOverlay" onclick="handleOverlayClick(event,'premiumOverlay')">
+  <div class="modal premium-modal">
+    <button class="modal-close" onclick="closeModal('premiumOverlay')">✕</button>
+    <div class="modal-logo">Ekasi<span>Hub</span> <span style="font-size:14px;color:var(--gold);font-family:'Plus Jakarta Sans',sans-serif">Premium</span></div>
+    <div class="modal-sub">Unlock exclusive content from top African creators</div>
+    <div class="plan-cards">
+      <div class="plan">
+        <div class="plan-name">Monthly</div>
+        <div class="plan-price">₦2,500<span>/mo</span></div>
+        <div class="plan-perks">✓ No ads<br>✓ Premium videos<br>✓ HD streams<br>✓ Early access</div>
+      </div>
+      <div class="plan rec">
+        <div class="rec-badge">Best Value</div>
+        <div class="plan-name">Yearly</div>
+        <div class="plan-price">₦1,500<span>/mo</span></div>
+        <div class="plan-perks">✓ Everything in Monthly<br>✓ Save 40%<br>✓ Creator badges<br>✓ Priority support</div>
+      </div>
+    </div>
+    <!-- In production replace onclick with: PaystackPop.setup({key:'pk_live_XXX', email, amount}) -->
+    <button class="btn-paystack" onclick="doPremium()">
+      <span>🔐</span> Pay with Paystack
+    </button>
+    <div class="paystack-note">Secure payment via Paystack · ₦ Naira · Cancel anytime</div>
+  </div>
+</div>
+
+<!-- ═══ TOAST ═══ -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ─── Auth state ─── */
+let user = JSON.parse(localStorage.getItem('ekasi_user') || 'null');
+
+function applyAuthState() {
+  const btnsGuest = document.querySelectorAll('#openLogin, #openSignup');
+  const avatar = document.getElementById('navAvatar');
+  if (user) {
+    btnsGuest.forEach(b => b.style.display = 'none');
+    avatar.textContent = user.name.charAt(0).toUpperCase();
+    avatar.classList.add('show');
+  } else {
+    btnsGuest.forEach(b => b.style.display = '');
+    avatar.classList.remove('show');
+  }
+}
+
+/* ─── Modal helpers ─── */
+function openModal(id) { document.getElementById(id).classList.add('open') }
+function closeModal(id) { document.getElementById(id).classList.remove('open') }
+function handleOverlayClick(e, id) { if (e.target.id === id) closeModal(id) }
+
+/* ─── Auth tab switch ─── */
+function switchTab(t) {
+  document.getElementById('tabLogin').classList.toggle('active', t === 'login');
+  document.getElementById('tabSignup').classList.toggle('active', t === 'signup');
+  document.getElementById('formLogin').style.display = t === 'login' ? '' : 'none';
+  document.getElementById('formSignup').style.display = t === 'signup' ? '' : 'none';
+}
+
+/* ─── Login ─── */
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  if (!email || !pass) { showToast('⚠️ Enter your email and password'); return; }
+  // TODO: swap with → supabase.auth.signInWithPassword({ email, password: pass })
+  user = { name: email.split('@')[0], email, premium: false };
+  localStorage.setItem('ekasi_user', JSON.stringify(user));
+  closeModal('authOverlay');
+  applyAuthState();
+  showToast('✅ Welcome back, ' + user.name + '!');
+}
+
+/* ─── Signup ─── */
+function doSignup() {
+  const name  = document.getElementById('signupName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const pass  = document.getElementById('signupPass').value;
+  if (!name || !email || pass.length < 8) { showToast('⚠️ Fill in all fields (password min 8 chars)'); return; }
+  // TODO: swap with → supabase.auth.signUp({ email, password: pass, options: { data: { display_name: name } } })
+  user = { name, email, premium: false };
+  localStorage.setItem('ekasi_user', JSON.stringify(user));
+  closeModal('authOverlay');
+  applyAuthState();
+  showToast('🎉 Welcome to EkasiHub, ' + name + '!');
+}
+
+/* ─── Premium/Paystack ─── */
+function doPremium() {
+  if (!user) { closeModal('premiumOverlay'); openModal('authOverlay'); return; }
+  // TODO: swap with Paystack inline payment:
+  // var handler = PaystackPop.setup({ key: 'pk_live_XXX', email: user.email, amount: 250000, currency: 'NGN', callback: function(r){ upgradeToPremium(r); }, onClose: function(){} });
+  // handler.openIframe();
+  showToast('🔐 Paystack integration ready — add your public key');
+  closeModal('premiumOverlay');
+}
+
+function upgradeToPremium(response) {
+  user.premium = true;
+  localStorage.setItem('ekasi_user', JSON.stringify(user));
+  showToast('⭐ Premium activated! Enjoy all content.');
+  document.querySelectorAll('.vid-card.premium').forEach(c => {
+    c.classList.remove('premium');
+    c.querySelector('.premium-lock').remove();
+  });
+}
+
+/* ─── Follow toggle ─── */
+function toggleFollow(btn) {
+  const following = btn.classList.toggle('following');
+  btn.textContent = following ? '✓ Following' : '+ Follow';
+  showToast(following ? '✅ Creator followed!' : 'Unfollowed');
+}
+
+/* ─── Toast ─── */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+/* ─── Category pills ─── */
+document.querySelectorAll('.cat-pill').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('.cat-pill').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+  });
+});
+
+/* ─── Nav auth triggers ─── */
+document.getElementById('openLogin').addEventListener('click', () => { switchTab('login'); openModal('authOverlay'); });
+document.getElementById('openSignup').addEventListener('click', () => { switchTab('signup'); openModal('authOverlay'); });
+document.getElementById('navAvatar').addEventListener('click', () => {
+  if (user) { localStorage.removeItem('ekasi_user'); user = null; applyAuthState(); showToast('👋 Signed out'); }
+});
+
+/* ─── Escape key ─── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeModal('authOverlay');
+    closeModal('premiumOverlay');
+  }
+});
+
+/* ─── Init ─── */
+applyAuthState();
+</script>
+</body>
+</html>
